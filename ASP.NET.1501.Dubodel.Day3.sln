@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "logic", "logic\logic.csproj", "{0F34B48B-0831-40E6-A1F5-1BD880CE073B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolynomialTests", "PolynomialTests\PolynomialTests.csproj", "{DC0DEE84-F173-46B9-B8BD-3A149365D196}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F34B48B-0831-40E6-A1F5-1BD880CE073B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F34B48B-0831-40E6-A1F5-1BD880CE073B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F34B48B-0831-40E6-A1F5-1BD880CE073B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F34B48B-0831-40E6-A1F5-1BD880CE073B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC0DEE84-F173-46B9-B8BD-3A149365D196}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC0DEE84-F173-46B9-B8BD-3A149365D196}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC0DEE84-F173-46B9-B8BD-3A149365D196}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC0DEE84-F173-46B9-B8BD-3A149365D196}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
