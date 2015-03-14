@@ -18,14 +18,24 @@ namespace logic
         {
             this.coefficients = coefficients.Reverse().ToArray();
         }
+
         public Polynomial(Polynomial targetPolynomial)
         {
-            this.coefficients = (double[])targetPolynomial.coefficients.Clone();
+            coefficients = (double[])targetPolynomial.coefficients.Clone();
         }
-
 
         public static Polynomial operator +(Polynomial firstSummand, Polynomial secondSummand)
         {
+            if (firstSummand == null)
+            {
+                throw new ArgumentNullException("firstSummand");
+            }
+
+            if (secondSummand == null)
+            {
+                throw new ArgumentNullException("secondSummand");
+            }
+
             Polynomial sum, smallerPolynomial;
             if (firstSummand.Degree > secondSummand.Degree)
             {
@@ -43,46 +53,53 @@ namespace logic
                 sum[i] += smallerPolynomial[i];
             }
 
-            sum.CheckSeniorPolynomialMembers();
+            sum.RemoveRedustantSeniorMembers();
             return sum;
+        }
+
+        public static Polynomial operator -(Polynomial operand)
+        {
+            if (operand == null)
+            {
+                throw new ArgumentNullException("operand");
+            }
+
+            var result = new Polynomial(operand);
+            for (int i = 0; i <= result.Degree; i++)
+            {
+                result[i] = -1 * result[i];
+            }
+
+            return result;
         }
 
         public static Polynomial operator -(Polynomial minuend, Polynomial subtrahend)
         {
-            Polynomial difference, smallerPolynomial;
-            int sign;
-            if (minuend.Degree > subtrahend.Degree)
+            if (minuend == null)
             {
-                smallerPolynomial = subtrahend;
-                difference = new Polynomial(minuend);
-                sign = 1;
-            }
-            else
-            {
-                smallerPolynomial = minuend;
-                difference = new Polynomial(subtrahend);
-                sign = -1;
+                throw new ArgumentNullException("minuend");
             }
 
-            for (int i = 0; i <= smallerPolynomial.Degree; i++)
+            if (subtrahend == null)
             {
-                difference[i] -= smallerPolynomial[i];
-                difference[i] *= sign;
-            }
-            if (sign < 1)
-            {
-                for (int i = smallerPolynomial.Degree + 1; i <= difference.Degree; i++)
-                {
-                    difference[i] *= sign;
-                }
+                throw new ArgumentNullException("subtrahend");
             }
 
-            difference.CheckSeniorPolynomialMembers();
-            return difference;
+            return minuend + (-subtrahend);
         }
 
         public static Polynomial operator *(Polynomial firstFactor, Polynomial secondFactor)
         {
+            if (firstFactor == null)
+            {
+                throw new ArgumentNullException("firstFactor");
+            }
+
+            if (secondFactor == null)
+            {
+                throw new ArgumentNullException("secondFactor");
+            }
+
             var product = new Polynomial(new double[firstFactor.Degree +
                 secondFactor.Degree + 1]);
             for (int i = 0; i <= firstFactor.Degree; i++)
@@ -93,13 +110,23 @@ namespace logic
                 }
             }
 
-            product.CheckSeniorPolynomialMembers();
+            product.RemoveRedustantSeniorMembers();
             return product;
         }
 
         public static void Divede(Polynomial dividend, Polynomial divisor, out Polynomial quotient,
             out Polynomial remainder)
         {
+            if (dividend == null)
+            {
+                throw new ArgumentNullException("dividend");
+            }
+
+            if (divisor == null)
+            {
+                throw new ArgumentNullException("divisor");
+            }
+
             if (dividend.Degree < divisor.Degree)
             {
                 quotient = new Polynomial(0);
@@ -112,6 +139,10 @@ namespace logic
 
                 for (int i = 0; i <= quotient.Degree; i++)
                 {
+                    if (Math.Abs(divisor.coefficients.Last()) < double.Epsilon)
+                    {
+                        throw new DivideByZeroException();
+                    }
                     double coeff = remainder[remainder.Degree - i] /
                                    divisor.coefficients.Last();
                     quotient[quotient.Degree - i] = coeff;
@@ -121,8 +152,8 @@ namespace logic
                             coeff * divisor[divisor.Degree - j];
                     }
                 }
-                quotient.CheckSeniorPolynomialMembers();
-                remainder.CheckSeniorPolynomialMembers();
+                quotient.RemoveRedustantSeniorMembers();
+                remainder.RemoveRedustantSeniorMembers();
             }
         }
 
@@ -161,13 +192,65 @@ namespace logic
             {
                 result.Append(coefficients[Degree]);
             }
+
             return result.ToString();
         }
 
+        public static bool operator ==(Polynomial firstPolynom, Polynomial secondPolynom)
+        {
+            if (Equals(firstPolynom, null) && Equals(secondPolynom, null))
+                return true;
+
+            if (Equals(firstPolynom, null) || Equals(secondPolynom, null))
+                return false;
+
+            if (ReferenceEquals(firstPolynom, secondPolynom))
+                return true;
+
+            if (firstPolynom.Degree != secondPolynom.Degree) return false;
+            for (int i = 0; i < firstPolynom.Degree; i++)
+            {
+                if (Math.Abs(firstPolynom[i] - secondPolynom[i]) < double.Epsilon)
+                    continue;
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool operator !=(Polynomial firstPolynom, Polynomial secondPolynom)
+        {
+            if (firstPolynom == null && secondPolynom == null)
+                throw new ArgumentNullException("Can't to compare null refferences.");
+
+            if (firstPolynom == null || secondPolynom == null)
+                throw new ArgumentNullException("Can't compare polynomial to null.");
+
+            return !(firstPolynom == secondPolynom);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (obj.GetType() != typeof(Polynomial)) return false;
+            return this == (Polynomial)obj;
+        }
+
+        public override int GetHashCode()
+        {
+            double sum = 0;
+            foreach (double coefficient in coefficients)
+            {
+                sum += coefficient;
+            }
+
+            return (int)unchecked(27011 * sum);
+        }
+
         /// <summary>
-        /// Удаляет нулевые члены, с наибольшей степенью
+        /// Remove redustant elements
         /// </summary>
-        private void CheckSeniorPolynomialMembers()
+        private void RemoveRedustantSeniorMembers()
         {
             int i = Degree;
             var newCoefficients = new List<double>();
@@ -175,14 +258,31 @@ namespace logic
             {
                 i--;
             }
+
             newCoefficients.AddRange(coefficients.Take(i + 1));
             coefficients = newCoefficients.ToArray();
         }
 
         private double this[int i]
         {
-            get { return coefficients[i]; }
-            set { coefficients[i] = value; }
+            get
+            {
+                if (i > coefficients.Length - 1)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
+                return coefficients[i];
+            }
+            set
+            {
+                if (i > coefficients.Length - 1)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
+                coefficients[i] = value;
+            }
         }
     }
 }
